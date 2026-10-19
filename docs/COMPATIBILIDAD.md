@@ -43,8 +43,9 @@ documenta **Settings → Themes → Color Theme** y el ajuste
 uno con una extensión. [Personalización de Cloud Shell](https://docs.cloud.google.com/shell/docs/configuring-cloud-shell),
 [temas del editor](https://docs.cloud.google.com/shell/docs/themes).
 
-El prompt y los listados Cloud evitan glifos Nerd Font; los símbolos Unicode
-estándar dependen de la fuente seleccionada. La paleta MD3 incluye terciario
+El prompt y los listados Cloud evitan glifos Nerd Font. Las esquinas
+redondeadas usan medios círculos Unicode (`◖ ◗`) y los íconos, emojis
+estándar; su forma depende de la fuente seleccionada y del navegador. La paleta MD3 incluye terciario
 **azul cian `#02BCF9`**. Esto no garantiza que el editor web reproduzca toda la
 apariencia de Windows Terminal.
 

@@ -5,25 +5,30 @@ add_newline = true
 # Variante sin íconos Nerd Font: el panel de terminal de Cloud Shell Editor
 # elige la fuente desde un dropdown fijo del propio producto (confirmado
 # con el usuario) — no acepta fuentes personalizadas, así que cualquier
-# glifo Nerd Font (incluidas las puntas tipo powerline "" "") se ve como
-# rectángulo. Se mantienen los colores y la estructura MD3, con bloques
-# planos y separadores en Unicode estándar en vez de puntas powerline.
+# glifo Nerd Font (incluidas las puntas powerline U+E0B4/U+E0B6) se ve como
+# rectángulo. Se mantienen los colores y la estructura MD3; las esquinas
+# redondeadas usan medios círculos Unicode (◖ ◗) y los íconos, emojis
+# estándar que el navegador dibuja con su propia fuente.
 format = """
+[◖](fg:#FF6D00)\
 $os\
 $username\
 $hostname\
- \
+[◗](fg:#FF6D00) [◖](fg:#02BCF9)\
 $directory\
 $git_branch\
 $git_status\
 $fill\
+[◖](fg:#2B2930)\
 $nodejs\
 $rust\
 $golang\
 $java\
 $cmd_duration\
-$time
-$line_break
+[◗](fg:#2B2930 bg:#FF6D00)\
+$time\
+[◗](fg:#FF6D00)\
+$line_break\
 [╰ ](dim #FF6D00)$character """
 
 [os]
@@ -42,20 +47,20 @@ ssh_only = false
 format = "[@CSE ](bg:#FF6D00 fg:#1C1B1F bold)"
 
 [directory]
-format = "[ $path$read_only ]($style)"
-style = "bg:#2B2930 fg:#02BCF9 bold"
+format = "[ 📂 $path$read_only ]($style)[◗](fg:#02BCF9)"
+style = "bg:#02BCF9 fg:#1C1B1F bold"
 truncation_length = 4
 truncate_to_repo = true
 read_only = " ro"
-read_only_style = "bg:#2B2930 fg:#CF6679"
+read_only_style = "bg:#02BCF9 fg:#1C1B1F"
 
 [git_branch]
-format = "[ $branch ]($style)"
+format = "[◖](fg:#00897B)[ 🌿 $branch ]($style)"
 style = "bg:#00897B fg:#FFFFFF bold"
 truncation_length = 50
 
 [git_status]
-format = "[$all_status$ahead_behind]($style)"
+format = "[$all_status$ahead_behind]($style)[◗](fg:#00897B)"
 style = "bg:#00897B fg:#FFD740 bold"
 conflicted  = "! "
 ahead       = "↑${count} "
@@ -96,7 +101,7 @@ show_milliseconds = false
 
 [time]
 disabled     = false
-format       = "[ $time ]($style)"
+format       = "[ 🕒 $time ]($style)"
 style        = "bg:#FF6D00 fg:#1C1B1F bold"
 time_format  = "%H:%M:%S"
 

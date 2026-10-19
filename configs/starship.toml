@@ -7,7 +7,7 @@ format = """
 $os\
 $username\
 $hostname\
-[](fg:#FF6D00) [](fg:#2B2930)\
+[](fg:#FF6D00) [](fg:#02BCF9)\
 $directory\
 $git_branch\
 $git_status\
@@ -29,12 +29,12 @@ disabled = false
 format = "[ $symbol ](bg:#FF6D00 fg:#1C1B1F bold)"
 
 [os.symbols]
-Ubuntu   = ""
-Debian   = ""
+Ubuntu   = "\uF31B"
+Debian   = "\uF306"
 Windows  = "󰍲"
-Linux    = ""
+Linux    = "\uF17C"
 Macos    = "󰀵"
-Unknown  = ""
+Unknown  = "\uF17C"
 
 [username]
 show_always = true
@@ -47,32 +47,32 @@ ssh_only = false
 format = "[@$hostname ](bg:#FF6D00 fg:#1C1B1F bold)"
 
 [directory]
-format = "[ 󰉋 $path$read_only ]($style)[](fg:#2B2930)"
-style = "bg:#2B2930 fg:#02BCF9 bold"
+format = "[ 󰉋 $path$read_only ]($style)[](fg:#02BCF9)"
+style = "bg:#02BCF9 fg:#1C1B1F bold"
 truncation_length = 4
 truncate_to_repo = true
 read_only = " 󰌾"
-read_only_style = "bg:#2B2930 fg:#CF6679"
+read_only_style = "bg:#02BCF9 fg:#1C1B1F"
 
 [git_branch]
 format = "[](fg:#00897B)[ $symbol$branch ]($style)"
 style = "bg:#00897B fg:#FFFFFF bold"
-symbol = " "
+symbol = "\uE0A0 "
 truncation_length = 50
 
 [git_status]
 format = "[$all_status$ahead_behind]($style)[](fg:#00897B)"
 style = "bg:#00897B fg:#FFD740 bold"
-conflicted  = " "
-ahead       = " ${count} "
-behind      = " ${count} "
-diverged    = " ${ahead_count} ${behind_count} "
-untracked   = " "
+conflicted  = " \uF06A"
+ahead       = " \uF062 ${count} "
+behind      = " \uF063 ${count} "
+diverged    = " \uF062 ${ahead_count} \uF063 ${behind_count} "
+untracked   = " \uF128"
 stashed     = " 󰏗"
-modified    = " "
-staged      = " "
+modified    = " \uF044"
+staged      = " \uF00C"
 renamed     = " »"
-deleted     = " "
+deleted     = " \uF1F8"
 
 [fill]
 symbol = "─"
@@ -91,12 +91,12 @@ symbol = "󱘗 "
 [golang]
 format = "[ $symbol$version ]($style)"
 style  = "bg:#2B2930 fg:#00ACD7 bold"
-symbol = " "
+symbol = "\uE627 "
 
 [java]
 format = "[ $symbol$version ]($style)"
 style  = "bg:#2B2930 fg:#ED8B00 bold"
-symbol = " "
+symbol = "\uE738 "
 
 [cmd_duration]
 format     = "[ 󱗻 $duration ]($style)"

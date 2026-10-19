@@ -12,12 +12,21 @@ __estado_git_md3() {
         atrasados=$(git rev-list --count 'HEAD..@{u}' 2>/dev/null || echo 0)
     fi
 
+    # Glifos Nerd Font escritos como bytes UTF-8: algunas herramientas eliminan
+    # el área de uso privado y dejaban cadenas vacías. Cloud Shell usa Unicode estándar.
+    local icono_preparado=$'\xef\x80\x8c' icono_modificado=$'\xef\x81\x84' icono_sin_seguimiento=$'\xef\x84\xa8'
+    local icono_adelantado=$'\xef\x81\xa2' icono_atrasado=$'\xef\x81\xa3'
+    if [[ ${TUNNING_PROFILE:-} == cloudshell || -n ${CLOUD_SHELL:-} ]]; then
+        icono_preparado='+' icono_modificado='~' icono_sin_seguimiento='?'
+        icono_adelantado='↑' icono_atrasado='↓'
+    fi
+
     local estado=''
-    git diff --cached --quiet 2>/dev/null || estado+=' '
-    git diff --quiet          2>/dev/null || estado+=' '
-    git ls-files --others --exclude-standard 2>/dev/null | grep -q . && estado+=' '
-    (( adelantados  > 0 )) && estado+="  ${adelantados} "
-    (( atrasados > 0 )) && estado+="  ${atrasados} "
+    git diff --cached --quiet 2>/dev/null || estado+=" ${icono_preparado}"
+    git diff --quiet          2>/dev/null || estado+=" ${icono_modificado}"
+    git ls-files --others --exclude-standard 2>/dev/null | grep -q . && estado+=" ${icono_sin_seguimiento}"
+    (( adelantados  > 0 )) && estado+=" ${icono_adelantado} ${adelantados} "
+    (( atrasados > 0 )) && estado+=" ${icono_atrasado} ${atrasados} "
 
     printf '%s' "${rama}|${estado}"
 }
@@ -35,45 +44,50 @@ __construir_indicador() {
     local texto_gris_oscuro=$(__color_texto  43  41  48) fondo_gris_oscuro=$(__color_fondo  43  41  48)
     local texto_verde_azulado=$(__color_texto   0 137 123) fondo_verde_azulado=$(__color_fondo   0 137 123)
     local texto_relleno=$(__color_texto  73  69  79) texto_oscuro=$(__color_texto  28  27  31)
-    local texto_terciario=$(__color_texto 2 188 249) texto_blanco=$(__color_texto 255 255 255)
+    local texto_terciario=$(__color_texto 2 188 249) fondo_terciario=$(__color_fondo 2 188 249) texto_blanco=$(__color_texto 255 255 255)
     local texto_amarillo=$(__color_texto 255 215  64) texto_exito=$(__color_texto 105 240 174)
     local texto_error=$(__color_texto 207 102 121)
 
-    local separador_izquierdo='' separador_derecho=''
+    # Separadores redondeados U+E0B6/U+E0B4, logo Ubuntu U+F31B y rama U+E0A0.
+    local separador_izquierdo=$'\xee\x82\xb6' separador_derecho=$'\xee\x82\xb4'
+    local icono_sistema=$'\xef\x8c\x9b ' icono_rama=$'\xee\x82\xa0 '
 
     local usuario=${USER} equipo=${HOSTNAME%%.*} directorio="${PWD/#$HOME/\~}"
     local entorno_chroot="${debian_chroot:+($debian_chroot) }"
     local etiqueta_directorio='󰉋' etiqueta_reloj='󱑂'
     if [[ ${TUNNING_PROFILE:-} == cloudshell || -n ${CLOUD_SHELL:-} ]]; then
         equipo=CSE
-        etiqueta_directorio='dir'
-        etiqueta_reloj='hora'
+        # Sin Nerd Font en el navegador: medios círculos y emojis estándar.
+        etiqueta_directorio='📂'
+        etiqueta_reloj='🕒'
+        separador_izquierdo='◖' separador_derecho='◗'
+        icono_sistema='' icono_rama='🌿 '
     fi
 
     # Bloque naranja de identidad.
-    local izquierda="${texto_naranja}${separador_izquierdo}${restaurar_color}${fondo_naranja}${texto_oscuro}${negrita}  ${entorno_chroot}${usuario}@${equipo} ${restaurar_color}"
+    local izquierda="${texto_naranja}${separador_izquierdo}${restaurar_color}${fondo_naranja}${texto_oscuro}${negrita} ${icono_sistema}${entorno_chroot}${usuario}@${equipo} ${restaurar_color}"
 
-    # Bloque oscuro del directorio.
-    izquierda+="${texto_naranja}${separador_derecho}${restaurar_color} ${texto_gris_oscuro}${separador_izquierdo}${restaurar_color}${fondo_gris_oscuro}${texto_terciario}${negrita} ${etiqueta_directorio} ${directorio} ${restaurar_color}"
+    # Bloque azul cian del directorio, con texto oscuro legible.
+    izquierda+="${texto_naranja}${separador_derecho}${restaurar_color} ${texto_terciario}${separador_izquierdo}${restaurar_color}${fondo_terciario}${texto_oscuro}${negrita} ${etiqueta_directorio} ${directorio} ${restaurar_color}"
 
     # Bloque verde azulado cuando hay un repositorio Git.
     local datos_git; datos_git=$(__estado_git_md3 2>/dev/null) || datos_git=''
     if [[ -n $datos_git ]]; then
         local rama_git="${datos_git%%|*}" estado_git="${datos_git##*|}"
-        izquierda+="${texto_gris_oscuro}${separador_derecho}${restaurar_color}${texto_verde_azulado}${separador_izquierdo}${restaurar_color}${fondo_verde_azulado}${texto_blanco}${negrita}  ${rama_git} ${restaurar_color}"
+        izquierda+="${texto_terciario}${separador_derecho}${restaurar_color}${texto_verde_azulado}${separador_izquierdo}${restaurar_color}${fondo_verde_azulado}${texto_blanco}${negrita} ${icono_rama}${rama_git} ${restaurar_color}"
         [[ -n $estado_git ]] && izquierda+="${fondo_verde_azulado}${texto_amarillo}${negrita}${estado_git}${restaurar_color}"
         izquierda+="${texto_verde_azulado}${separador_derecho}${restaurar_color}"
     else
-        izquierda+="${texto_gris_oscuro}${separador_derecho}${restaurar_color}"
+        izquierda+="${texto_terciario}${separador_derecho}${restaurar_color}"
     fi
 
-    # Mide los caracteres visibles sin contar las secuencias de color.
-    local ancho_izquierda; ancho_izquierda=$(printf '%s' "$izquierda" | sed $'s/\001[^\002]*\002//g' | wc -m)
+    # Mide las columnas visibles sin las secuencias de color; los emojis ocupan dos.
+    local ancho_izquierda; ancho_izquierda=$(printf '%s' "$izquierda" | sed $'s/\001[^\002]*\002//g' | wc -L)
 
-    # Medir también el reloj: los rótulos Cloud Shell no requieren Nerd Font.
+    # Medir también el reloj: el emoji de Cloud Shell ocupa dos columnas.
     local hora; hora=$(date +%H:%M)
     local derecha="${texto_gris_oscuro}${separador_izquierdo}${restaurar_color}${fondo_naranja}${texto_oscuro}${negrita} ${etiqueta_reloj} ${hora} ${restaurar_color}${texto_naranja}${separador_derecho}${restaurar_color}"
-    local ancho_derecha; ancho_derecha=$(printf '%s' "$derecha" | sed $'s/\001[^\002]*\002//g' | wc -m)
+    local ancho_derecha; ancho_derecha=$(printf '%s' "$derecha" | sed $'s/\001[^\002]*\002//g' | wc -L)
 
     # Relleno entre el directorio y el reloj.
     local columnas=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
